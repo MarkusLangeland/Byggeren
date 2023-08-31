@@ -1,0 +1,30 @@
+/*
+ * GccApplication2.c
+ *
+ * Created: 31.08.2023 15:51:52
+ * Author : markuslf
+ */ 
+
+#include <avr/io.h>
+#include <util/delay.h>
+#include <stdbool.h>
+
+#define IO_OUTPUT 1
+
+// lage firkantsignal
+int main(void)
+{
+	DDRA |= (IO_OUTPUT << PINA);
+    /* Replace with your application code */
+    while (true) 
+    {
+		
+		PORTA |= (1 << PINA0);
+		_delay_ms(100);
+		PORTA &= (0 << PINA0);
+		_delay_ms(100);
+		
+		
+    }
+}
+
