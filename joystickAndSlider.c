@@ -34,23 +34,23 @@ userInput getUserInput(uint8_t* adc) {
 
 Direction getDirection(uint8_t* adc) {
 	userInput input = getUserInput(adc);	
-		printf("%d ", input.JoyX);
-		printf("%d ", input.JoyY);
+		//printf("%d ", input.JoyX);
+		//printf("%d ", input.JoyY);
 		
 	if ((input.JoyY > Treshold && (abs(input.JoyX) < abs(input.JoyY))) ) {
-		printf("UP!");
+		//printf("UP!");
 		return UP;
 		} else if ((input.JoyY < -Treshold) && (abs(input.JoyX) <= abs(input.JoyY))) {
-		printf("DOWN!");
+		//printf("DOWN!");
 		return DOWN;
 		} else if (input.JoyX > Treshold && (abs(input.JoyX) >= abs(input.JoyY))) {
-		printf("RIGHT!");
+		//printf("RIGHT!");
 		return RIGHT;
 		} else if (input.JoyX < -Treshold && (abs(input.JoyX) > abs(input.JoyY))) {
-		printf("LEFT!");
+		//printf("LEFT!");
 		return LEFT;
 		} else {
-			printf("CENTER!");
+			//printf("CENTER!");
 			return NEUTRAL;
 		} 
 	}; 
