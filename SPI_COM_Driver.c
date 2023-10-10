@@ -10,7 +10,7 @@ void SPI_init(void)
 	DDRB |= (1<<PB5) | (1<<PB7) | (1<<PB4);
 	
 	//Set input MISO, RXD1, TXD1
-	DDRB &= ~(1 << PB2) & ~(1 << PB3) & ~(1<<PB6);  
+	DDRB &= /*~(1 << PB2) & ~(1 << PB3) &*/ ~(1<<PB6);  
 	
 	//Set SPI, Master, set clock rate fck/16 
 	SPCR |= (1<<SPE) | (1<<MSTR) | (1<<SPR0); 
@@ -27,14 +27,19 @@ void SS_off(void){ //Slave select off
 	PORTB |= (1 << PB4);
 }
 
-void SPI_write(char cData){
+uint8_t SPI_write(uint8_t cData){
 	SPDR = cData;
 	
-	while(!(SPSR & (1<<SPIF)));  
+	while(!(SPSR & (1<<SPIF)))
+	{
+	};  
+	
+	return SPDR;
 }
 
-char SPI_read(void) {
-	SPI_write(0); 
-	
-	return SPDR;  
-}
+//uint8_t SPI_read(void) {
+	//SPI_write(0); 
+	//
+	//return SPDR;  
+//}
+

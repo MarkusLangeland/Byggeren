@@ -24,23 +24,36 @@ int main(void)
 	
 	volatile uint8_t* adc = (uint8_t*)0x13ff;
 	uart_init(UBRR);
-	xmem_init(); 
-	oled_init(); 
+	//xmem_init(); 
+	//oled_init(); 
 	SPI_init();
 	
 	while(true){
-		SS_on();
-		SPI_write('a');
-		SS_off(); 
 		
-		printf("%d", SPI_read()); 
-		//printf("hello world");
- 	
+		SS_off();
+		SS_on();
+		
+		SPI_write(0b00000101);
+		SPI_write(0x0f		);
+		SPI_write(0b11100000);
+		SPI_write(0b01000000);
+		
+		
+		SS_off();
+		SS_on();
+		
+		SPI_write(0b00000011);
+		SPI_write(0x0f);
+		
+		printf("%d\n\r", SPI_write(0x69)); 	
+		SS_off();
+		/*printf("hello world\n\r");*/
 	}
 			
+	//int selected = 0;
 	//while (true) {
-		//int userInput = main_menu(adc);
-		//sub_menu(userInput, adc);	
+		//int userInput = main_menu(adc, &selected);
+		//sub_menu(userInput, adc);
 	//}
 
 	
@@ -90,26 +103,25 @@ int main(void)
 //}
 
 
-int main_menu(uint8_t* adc) {
-	int selected = 0;
+int main_menu(uint8_t* adc, int* selected) {
 	while (true) {
 		Direction joyPos = getDirection(adc);
 		switch (joyPos)
 		{
 			case DOWN:
-			if (selected < 2) {
-				selected = selected + 1;
+			if (*selected < 2) {
+				*selected = *selected + 1;
 			}
 			_delay_ms(600);
 			break;
 			case UP:
-			if (selected > 0) {
-				selected = selected - 1;
+			if (*selected > 0) {
+				*selected = *selected - 1;
 			}
 			_delay_ms(600);
 			break;
 			case RIGHT:
-				return selected;
+				return *selected;
 				break;
 			
 			case LEFT:
@@ -124,7 +136,7 @@ int main_menu(uint8_t* adc) {
 		oled_print_string("   Highscore");
 		go_to_pos(2,0);
 		oled_print_string("   Settings");
-		switch(selected) {
+		switch(*selected) {
 			case 0:
 			go_to_pos(0,0);
 			oled_clear_line(0);
