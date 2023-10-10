@@ -10,7 +10,7 @@
 #define INCFILE1_H_
 
 #define Offset 25
-#define Treshold 8
+#define Treshold 80
 
 typedef enum {
 	LEFT,

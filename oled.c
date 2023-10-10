@@ -42,6 +42,7 @@ void go_to_col(int col) {
 }
 
 
+
 void go_to_pos(int line, int col) {
 		go_to_line(line);
 		go_to_col(col);

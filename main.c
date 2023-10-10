@@ -10,6 +10,7 @@
 #include "joystickAndSlider.h"
 #include "oled.h"
 #include "font.h"
+#include "SPI_COM_Driver.h"
 
 #define IO_OUTPUT 1
 #define BAUD 9600
@@ -25,59 +26,23 @@ int main(void)
 	uart_init(UBRR);
 	xmem_init(); 
 	oled_init(); 
-	int selected = 0;
-	 while (true) {
-		 Direction joyPos = getDirection(adc);
-		 switch (joyPos)
-		 {
-			 case DOWN:
-				 if (selected < 2) {
-					 selected = selected + 1;
-				 }
-				 _delay_ms(600);
-				 break;
-			 case UP:
-				if (selected > 0) {
-					selected = selected - 1;
-				}
-				_delay_ms(600);
-				break;
-			 case RIGHT:
-				break;
-			 
-			 case LEFT:
-				break;
-			 default:
-				printf("");
-				break;
-		 }
-		 go_to_pos(0,0);
-		 oled_print_string("   Play");
-		 go_to_pos(1,0);
-		 oled_print_string("   Highscore");
-		 go_to_pos(2,0);
-		 oled_print_string("   Settings");
-		 switch(selected) {
-			 case 0:
-				go_to_pos(0,0);
-				oled_clear_line(0);
-				oled_print_string("-> Play");
-				break;
-			case 1:
-				go_to_pos(1,0);
-				oled_clear_line(1);
-				oled_print_string("-> Highscore");
-				break;
-			case 2: 
-				go_to_pos(2,0);
-				oled_clear_line(2);
-				oled_print_string("-> Settings");
-				break;
-			default:
-				break;
-		 }
-	 }
-	 
+	SPI_init();
+	
+	while(true){
+		SS_on();
+		SPI_write('a');
+		SS_off(); 
+		
+		printf("%d", SPI_read()); 
+		//printf("hello world");
+ 	
+	}
+			
+	//while (true) {
+		//int userInput = main_menu(adc);
+		//sub_menu(userInput, adc);	
+	//}
+
 	
 // 	while (true)
 // 	{
@@ -123,3 +88,106 @@ int main(void)
 	//}
 		//
 //}
+
+
+int main_menu(uint8_t* adc) {
+	int selected = 0;
+	while (true) {
+		Direction joyPos = getDirection(adc);
+		switch (joyPos)
+		{
+			case DOWN:
+			if (selected < 2) {
+				selected = selected + 1;
+			}
+			_delay_ms(600);
+			break;
+			case UP:
+			if (selected > 0) {
+				selected = selected - 1;
+			}
+			_delay_ms(600);
+			break;
+			case RIGHT:
+				return selected;
+				break;
+			
+			case LEFT:
+			break;
+			default:
+			printf("");
+			break;
+		}
+		go_to_pos(0,0);
+		oled_print_string("   Play");
+		go_to_pos(1,0);
+		oled_print_string("   Highscore");
+		go_to_pos(2,0);
+		oled_print_string("   Settings");
+		switch(selected) {
+			case 0:
+			go_to_pos(0,0);
+			oled_clear_line(0);
+			oled_print_string("-> Play");
+			break;
+			case 1:
+			go_to_pos(1,0);
+			oled_clear_line(1);
+			oled_print_string("-> Highscore");
+			break;
+			case 2:
+			go_to_pos(2,0);
+			oled_clear_line(2);
+			oled_print_string("-> Settings");
+			break;
+			default:
+			break;
+		}
+	}
+	return -1;
+}
+
+void sub_menu(int userInput, uint8_t* adc) {
+	switch (userInput) {
+		case 0:
+			oled_screen_clear();
+			oled_print_string("Playing game");
+			break;
+		case 1:
+			oled_screen_clear();
+			go_to_pos(0,0);
+			oled_print_string("High score: ");
+			break;
+		case 2:
+			oled_screen_clear();
+			go_to_pos(0,0);
+			oled_print_string("Settings:");
+			break;
+	}
+	while (true) {
+		Direction joyPos = getDirection(adc);
+		switch (joyPos)
+		{
+			case LEFT:
+			oled_screen_clear();
+			return;
+			_delay_ms(600);
+			break;
+			//case UP:
+			//if (selected > 0) {
+				//selected = selected - 1;
+			//}
+			//_delay_ms(600);
+			//break;
+			//case RIGHT:
+			//return selected;
+			//break;
+			//
+			//case LEFT:
+			//break;
+			default:
+			printf("");
+			break;
+		}
+	}
+}
