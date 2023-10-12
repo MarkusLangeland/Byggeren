@@ -37,9 +37,9 @@ uint8_t SPI_write(uint8_t cData){
 	return SPDR;
 }
 
-//uint8_t SPI_read(void) {
-	//SPI_write(0); 
-	//
-	//return SPDR;  
-//}
+uint8_t SPI_read(void) {
+	SPI_write(0); 
+	
+	return SPDR;  
+}
 

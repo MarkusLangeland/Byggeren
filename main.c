@@ -11,6 +11,8 @@
 #include "oled.h"
 #include "font.h"
 #include "SPI_COM_Driver.h"
+#include "mcp2515.h"
+#include "can_controller.h"
 
 #define IO_OUTPUT 1
 #define BAUD 9600
@@ -24,32 +26,63 @@ int main(void)
 	
 	volatile uint8_t* adc = (uint8_t*)0x13ff;
 	uart_init(UBRR);
-	//xmem_init(); 
-	//oled_init(); 
+	xmem_init(); 
+	oled_init(); 
 	SPI_init();
 	
-	while(true){
-		
-		SS_off();
-		SS_on();
-		
-		SPI_write(0b00000101);
-		SPI_write(0x0f		);
-		SPI_write(0b11100000);
-		SPI_write(0b01000000);
-		
-		
-		SS_off();
-		SS_on();
-		
-		SPI_write(0b00000011);
-		SPI_write(0x0f);
-		
-		printf("%d\n\r", SPI_write(0x69)); 	
-		SS_off();
-		/*printf("hello world\n\r");*/
+	printf("\n\r");
+	
+	while (true)
+	{
+		//can_init();
 	}
-			
+	
+	//while(true){
+		//
+		//SS_off();
+		//SS_on();
+		//
+		//SPI_write(MCP_WRITE);
+		//SPI_write(0b11100000);
+		//SPI_write(0x6F);
+		//SS_off(); 
+		//
+		//SS_on(); 
+		//SPI_write(MCP_READ); 
+		//SPI_write(0b11100000);
+		//printf("%c\n\r", SPI_read()); 	
+		//
+		//SS_off();
+	//}
+	
+	//while (true)
+	//{
+		//mcp2515_write(0b11100000, '0b11111111');
+		//for (int i = 7; i >= 0; i--){
+			//printf("%d", (mcp2515_read(0b11100000) & (1 << i)) ? 1 : 0);
+		//}
+		//printf("\n\r");
+	//}
+	
+	
+	/*
+	//TESTING OF BIT MODIFY correct
+	
+	printf("\n\r");
+	
+	mcp2515_write(0b11100000, 0b00000000);
+	for (int i = 7; i >= 0; i--){
+		printf("%d", (mcp2515_read(0b11100000) & (1 << i)) ? 1 : 0);
+	}
+	printf("\n\r");
+	
+	mcp2515_bit_modify(0b11100000, 0b00000011, 0b11111111);
+	for (int i = 7; i >= 0; i--){
+		printf("%d", (mcp2515_read(0b11100000) & (1 << i)) ? 1 : 0);
+	}
+	printf("\n\r");
+	*/
+
 	//int selected = 0;
 	//while (true) {
 		//int userInput = main_menu(adc, &selected);
@@ -57,12 +90,12 @@ int main(void)
 	//}
 
 	
-// 	while (true)
-// 	{
-// 	//oled_write_data(); 
-// 		//printf(".");
-// 		//_delay_ms(10);
-// 	}
+ 	//while (true)
+ 	//{
+ 	//oled_write_data();
+ 	//printf(".");
+ 	//_delay_ms(10);
+ 	//}
 	
 	//_delay_ms(5000);
 	//oled_screen_clear(); 
@@ -85,22 +118,6 @@ int main(void)
 		//printf("\n\r");
 	//}
 }
-
-
-
-
-//int main(void)
-//{
-	//xmem_init();
-	//volatile uint8_t* adc = (uint8_t*)0x1400;
-	//*adc = 69;
-	//
-	//while(true){
-		////xmem_write(0x01, 0x1200);
-		//xmem_read(0x1000);
-	//}
-		//
-//}
 
 
 int main_menu(uint8_t* adc, int* selected) {
