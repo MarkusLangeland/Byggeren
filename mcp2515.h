@@ -1,6 +1,7 @@
 #ifndef __MCP2515_H
 #define __MCP2515_H
 
+
 /*
 mcp2515.h
 
@@ -18,6 +19,7 @@ Copyright 2003 Kimberly Otten Software Consulting
 
 #include "stdint.h"
 #include "SPI_COM_Driver.h"
+#include <stdbool.h>
 
 #define MCP_RXF0SIDH	0x00
 #define MCP_RXF0SIDL	0x01
@@ -192,6 +194,6 @@ void mcp2515_bit_modify(uint8_t address, uint8_t mask, uint8_t data);
 uint8_t mcp2515_read_status(void); 
 void mcp2515_request_to_send(void); 
 void mcp2515_reset(void); 
-uint8_t mcp2515_init(); 
+bool mcp2515_init(); 
 
 #endif

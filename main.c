@@ -28,14 +28,34 @@ int main(void)
 	uart_init(UBRR);
 	xmem_init(); 
 	oled_init(); 
-	SPI_init();
 	
 	printf("\n\r");
+
+	can_init(2);
 	
-	while (true)
-	{
-		//can_init();
-	}
+	//testing loopback mode
+	message_type message = {
+		1365,
+		8,
+		{'a','b','n','m','k','s','g','f'}
+	};
+	
+		
+		can_send(&message);
+		
+		message_type messageRecieved;	
+		while(!can_has_masage()) {
+		}
+		
+		can_recieve(&messageRecieved);
+		printf("Received with ID %u of size %u: \n\r", messageRecieved.ID, messageRecieved.length);
+		for (uint8_t i = 0; i < messageRecieved.length; i++) {
+			printf("%c, ", messageRecieved.data[i]);
+		}
+		printf("\n\r");
+		
+		
+	
 	
 	//while(true){
 		//

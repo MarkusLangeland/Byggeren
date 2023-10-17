@@ -3,12 +3,16 @@
 #include <util/delay.h>
 
 void can_init(uint8_t mode){
+	//checks if we initialize
+	while (mcp2515_init()){
+	}
+	printf("[mcp2515] initialized\n\r");
 	
-	mcp2515_init(); 
-
-	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, mode); 
+	//set to mode
+	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, mode<<5); 
+	//printf("CAN control register: %u\n", mcp2515_read(MCP_CANCTRL));
 	
-	mcp2515_write(MCP_RXB0CTRL, MCP_RXM0 | MCP_RXM1); //rollover if we have overflow problems
+	//mcp2515_write(MCP_RXB0CTRL, MCP_RXM0 | MCP_RXM1); //rollover if we have overflow problems???? Nissanth?
 }
 
 void can_send(message_type* message){
@@ -24,31 +28,35 @@ void can_send(message_type* message){
 	mcp2515_request_to_send(); 
 }
 
-int can_recieve(message_type* message){
-	
-	if (mcp2515_read(MCP_CANINTF) & MCP_RX1IF){
-		message->ID = (mcp2515_read(MCP_RXB0SIDL) >> 5) + (mcp2515_read(MCP_RXB0SIDH) << 3); 
-		
-		message->data = mcp2515_read(MCP_RXB0DLC); 
-		
-		for (int i = 0; i < message->length; ++i){
-			message->data[i] = mcp2515_read(MCP_RXB0D0 + i);
-		}
+
+bool can_has_masage() {
+	return mcp2515_read(MCP_CANINTF) & MCP_RX0IF || mcp2515_read(MCP_CANINTF) & MCP_RX1IF;
+}
+
+void can_recieve(message_type* message){
+	if(message == NULL){
+		// panic
 	}
-	
-	else if (mcp2515_read(MCP_CANINTF) & MCP_RX1IF){
-		message->ID = (mcp2515_read(MCP_RXB1SIDL) >> 5) + (mcp2515_read(MCP_RXB1SIDH) << 3);
+		if (mcp2515_read(MCP_CANINTF) & MCP_RX0IF){
+			message->ID = (mcp2515_read(MCP_RXB0SIDL) >> 5) + (mcp2515_read(MCP_RXB0SIDH) << 3);
 			
-		message->data = mcp2515_read(MCP_RXB1DLC);
-		
-		for (int i = 0; i < message->length; ++i){
-			message->data[i] = mcp2515_read(MCP_RXB1D0 + i);
-		}
-	}
-	else {
-			return 1; 
+			message->length = mcp2515_read(MCP_RXB0DLC);
+			
+			for (int i = 0; i < message->length; ++i){
+				message->data[i] = mcp2515_read(MCP_RXB0D0 + i);
+			}
+			return;
 		}
 		
-	return 0;
+		if (mcp2515_read(MCP_CANINTF) & MCP_RX1IF){
+			message->ID = (mcp2515_read(MCP_RXB1SIDL) >> 5) + (mcp2515_read(MCP_RXB1SIDH) << 3);
+			
+			message->length = mcp2515_read(MCP_RXB1DLC);
+			
+			for (int i = 0; i < message->length; ++i){
+				message->data[i] = mcp2515_read(MCP_RXB1D0 + i);
+			}
+			return;
+		}
 }
 

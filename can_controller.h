@@ -16,8 +16,8 @@ typedef struct {
 
 void can_init(uint8_t mode); 
 void can_send(message_type* message); 
-int can_recieve(message_type* message); 
-
+void can_recieve(message_type* message); 
+bool can_has_masage();
 
 
 
