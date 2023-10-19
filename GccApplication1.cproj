@@ -142,6 +142,9 @@
     <Compile Include="adc.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="can_config.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="can_controller.c">
       <SubType>compile</SubType>
     </Compile>
@@ -149,9 +152,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="font.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="IncFile1.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="joystickAndSlider.c">
@@ -167,6 +167,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="mcp2515.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="menu.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="menu.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="oled.c">

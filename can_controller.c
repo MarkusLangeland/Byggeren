@@ -1,6 +1,14 @@
 #include "can_controller.h"
 #include "mcp2515.h"
+#include "can_config.h"
 #include <util/delay.h>
+
+
+void can_config_setup() {
+	uint8_t bit_time = 	sync + proqSeg + ps1 + ps2;
+	//uint16_t BRP = 
+}
+
 
 void can_init(uint8_t mode){
 	//checks if we initialize
@@ -11,8 +19,6 @@ void can_init(uint8_t mode){
 	//set to mode
 	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, mode<<5); 
 	//printf("CAN control register: %u\n", mcp2515_read(MCP_CANCTRL));
-	
-	//mcp2515_write(MCP_RXB0CTRL, MCP_RXM0 | MCP_RXM1); //rollover if we have overflow problems???? Nissanth?
 }
 
 void can_send(message_type* message){
@@ -29,7 +35,7 @@ void can_send(message_type* message){
 }
 
 
-bool can_has_masage() {
+bool can_has_message() {
 	return mcp2515_read(MCP_CANINTF) & MCP_RX0IF || mcp2515_read(MCP_CANINTF) & MCP_RX1IF;
 }
 

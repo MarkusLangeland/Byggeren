@@ -93,5 +93,4 @@ SS_on();
 	SPI_write(data);
 	
 	SS_off(); //Raising CS pin
-
 }

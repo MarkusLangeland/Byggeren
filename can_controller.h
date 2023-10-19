@@ -7,6 +7,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+enum modes {
+	normalMode, 
+	sleepMode,
+	loopBackMode,
+	listenOnlyMode,
+	configMode,
+};
+
 typedef struct {
 	uint16_t ID;
 	uint8_t length;
@@ -17,7 +25,7 @@ typedef struct {
 void can_init(uint8_t mode); 
 void can_send(message_type* message); 
 void can_recieve(message_type* message); 
-bool can_has_masage();
+bool can_has_message();
 
 
 
