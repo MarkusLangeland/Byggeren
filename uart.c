@@ -1,47 +1,149 @@
-#include <avr/io.h>
+/*
+ * uart.c
+ *
+ * Author: Gustav O. Often and Eivind H. J�lsgard
+ *
+ * For use in TTK4155 Embedded and Industrial Computer Systems Design
+ * NTNU - Norwegian University of Science and Technology
+ *
+ */ 
+#include <stdint.h>
+
+#include "sam.h"
 #include "uart.h"
-#include <util/delay.h>
 
-//1. define ports
-//2. send and transmitt signal
+//Ringbuffer for receiving multiple characters
+uart_ringbuffer rx_buffer;
 
 
-//USART_init er hentet rett fra boken. Side 172 i kilde: https://learn-eu-central-1-prod-fleet01-xythos.content.blackboardcdn.com/5def77a38a2f7/309080?X-Blackboard-S3-Bucket=learn-eu-central-1-prod-fleet01-xythos&X-Blackboard-Expiration=1693839600000&X-Blackboard-Signature=9KvQ0h28BrglOqy60TPsanzsGhP5mqPjbQW6dRUtpBI%3D&X-Blackboard-Client-Id=303508&X-Blackboard-S3-Region=eu-central-1&response-cache-control=private%2C%20max-age%3D21600&response-content-disposition=inline%3B%20filename%2A%3DUTF-8%27%27Microcontroller%2520ATmega162.pdf&response-content-type=application%2Fpdf&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGoaDGV1LWNlbnRyYWwtMSJGMEQCICgt092rEboss%2FCyK9U5jvu7EBgDswqx1VW0Qosqe0YGAiAVIL0JC%2FUVYVnotQdVDpnWNVeMcf61%2BoxbUkrEYZuZbCq9BQhEEAMaDDYzNTU2NzkyNDE4MyIMWpDsn3Q20GoCPtLjKpoF7rGx0pOnX0k2istTNnhuBtD5ZEJxz9WnJiUHhO8bfL20kaZI8Ey7VV5v5IB3dvy2MflXG8i7wdERtr4YkmtMMICGjp%2BOwb1aCD6VYB%2BxJz9MGwelPziRDn59F2WkC%2BmlGi3BaaHecWF9bx9wMbCTjFdMbDvINgKn6dvoD2Tmtah3nOwsqzsS%2FPWYAyJ6%2BqOB1WBAtsE4OIMMy6qWtbIYGUqQu61EzLD%2BH8GOs9AKiQyIFVc8i1LiLymVFyymiVwUd4Bq%2FQ%2FNfkBQgKMNmLLXq6pm0yzZOLp2ldfnvuUGDrPrUXny2BoPDCnaClhtW%2FK9QOZn7j5JLq8M3oTqkewQ8PwAl2gQ2UX3iL2YPm0B6Mu9r8%2BZgj3KHBqE%2FlMI%2FHp1ys%2FfzlcBc2IxlwTRrtGZJu5aHMoY8r%2F3TTPFC8CsHBS5sJqdLIkFm8aq4iKB8wYBSE4TKc4i89OGbdWZQd8rsbHR3dEfTXbL43MmNm3ShnLBXpI0pW%2F17UK2yvYKckJ7q54tVhM7rnLyPekan%2B7lcHgjBQE2pkoCNb1IvQKc60sN3yeYpHkpzUslLRD%2BAIRuYLRvmqHYATe7Cn3Kz3FLvMi7fp4uyAhR6M8pmmqqLi172qsSJkXRT7EZVeKI2GsAvNTJvALhJMk1e3oFSDXO4n8mD2weRvQgZCvs5HyKBA8Lw4ZgF074NlKJcbqf7GeS9IxF7%2FdWwMXkHg%2BRJ1KPZJQW%2FqIJTiVTRNRptw30OnJvMkn1qLvajJ9bcG90yvaDS2%2BiSU123z26X2j2OPBmPRF6b9tgmmfLZpQapiZ%2BcsFpXRee5o8uDYITi%2B5z2ZlNJmfR8Zbo%2FkUqY7r%2B6828B3R59mZsWcZVKhq4DSATb7ep7qXNvezygOXiMJng1qcGOrIB0%2FXlT6sEDIaqQMEBgsK0%2BzXEiB6zEwsuHoLW0fcvDh19bf5%2BVvz%2FK6NtaxDEQWYPAnTlBFMupmxUH3R6pi%2B3qZK9tr11cztKZ9bR1v%2FuqSaPc1l20ii%2FWu5b91RE22E6N2o5NtTArPVluRIMWYLJYdznoySoIOONPu8yNX0MSsZg03hfE56iUvSWjff82LGbiD1GFrel5dajS12z6H%2FGC%2Bvh%2B%2By5qVRCOZyo1WVfMdK4dg%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20230904T090000Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Credential=ASIAZH6WM4PL324CQ6CS%2F20230904%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Signature=f885a7fa13b05c6520ae8984806f48a0da2dd845ca092ba2771d255a6c3b4d22
-
-void uart_init( unsigned int ubrr )
+/**
+ * \brief Configure UART.
+ *
+ * \param void
+ *
+ * \retval void.
+ */
+void configure_uart(void)
 {
-	/* Set baud rate */
-	UBRR0H = (unsigned char)(ubrr>>8);
-	UBRR0L = (unsigned char)ubrr;
-	/* Enable receiver and transmitter */
-	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
-	/* Set frame format: 8data, 2stop bit */
-	UCSR0C = (1<<URSEL0)|(1<<USBS0)|(3<<UCSZ00);
+	uint32_t ul_sr;
+
+/*
+Initialize UART ring buffer as empty
+*/
+rx_buffer.head=0;
+rx_buffer.tail=0;
+
+/*
+Initialize UART communication
+*/
+	// Pin configuration
+	// Disable interrupts on Uart receive (URXD) and transmit (UTXD) pins
+	PIOA->PIO_IDR = PIO_PA8A_URXD | PIO_PA9A_UTXD;
+
+	// Disable the Parallel IO (PIO) of the URXD and UTXD pins so that the peripheral controller can use them
+	PIOA->PIO_PDR = PIO_PA8A_URXD | PIO_PA9A_UTXD;
+
+	// Read current peripheral AB select register and set the UTXD and URXD pins to 0 (UART is connected as peripheral A)
+	ul_sr = PIOA->PIO_ABSR;
+	PIOA->PIO_ABSR &= ~(PIO_PA8A_URXD | PIO_PA9A_UTXD) & ul_sr;
+
+	// Enable pull up resistor on URXD and UTXD pin
+	PIOA->PIO_PUER = PIO_PA8A_URXD | PIO_PA9A_UTXD;
+
+	// Uart configuration
 	
-	fdevopen(&uart_transmit, &uart_receiver);
+	// Enable the peripheral UART controller in Power Management Controller (PMC)
+	PMC->PMC_PCER0 = 1 << ID_UART;
+
+	// Reset and disable receiver and transmitter
+	UART->UART_CR = UART_CR_RSTRX | UART_CR_RSTTX | UART_CR_RXDIS | UART_CR_TXDIS;
+
+	// Set the baudrate
+	UART->UART_BRGR = 547; // MCK / 16 * x = BaudRate (write x into UART_BRGR)  
+
+	// No parity bits
+	UART->UART_MR = UART_MR_PAR_NO | UART_MR_CHMODE_NORMAL;	
+
+	// Disable PDC channel
+	UART->UART_PTCR = UART_PTCR_RXTDIS | UART_PTCR_TXTDIS;
+
+	// Configure interrupts on receive ready and errors
+	UART->UART_IDR = 0xFFFFFFFF;
+	UART->UART_IER = UART_IER_RXRDY | UART_IER_OVRE | UART_IER_FRAME | UART_IER_PARE;
+
+	// Enable UART interrupt in the Nested Vectored Interrupt Controller(NVIC)
+	NVIC_EnableIRQ((IRQn_Type) ID_UART);
+
+	// Enable UART receiver and transmitter
+	UART->UART_CR = UART_CR_RXEN | UART_CR_TXEN;
+	
+	
+
 }
 
-void uart_transmit( unsigned char data )
+/**
+ * \brief Get character from UART
+ *
+ * \param *c location of character 
+ *
+ * \retval Success(0) or failure(1)
+ */
+int uart_getchar(uint8_t *c)
 {
-	/* Wait for empty transmit buffer */
-	while ( !( UCSR0A & (1<<UDRE0)) );
-	/* Put data into buffer, sends the data */
-	UDR0 = data;
+	// Check if a character is available in the ringbuffer
+	if(rx_buffer.head == rx_buffer.tail) { //Buffer is empty
+		return 1;
+	}
+
+	// Read the head character from the ringbuffer
+	*c = rx_buffer.data[rx_buffer.head];
+	rx_buffer.head = (rx_buffer.head + 1) % UART_RINGBUFFER_SIZE;
+	return 0;
 }
 
-unsigned char uart_receiver( void )
+/*
+ * \brief Sends a character through the UART interface
+ *
+ * \param c Character to be sent
+ *
+ * \retval Success(0) or failure(1).
+ */
+int uart_putchar(const uint8_t c)
 {
-	/* Wait for data to be received */
-	while ( !(UCSR0A) & (1<<RXC0));
-	/* Get and return received data from buffer */
-	return UDR0;
+	// Check if the transmitter is ready
+	if((UART->UART_SR & UART_SR_TXRDY) != UART_SR_TXRDY)
+	return 1;
+
+	// Send the character
+	UART->UART_THR = c;
+	while(!((UART->UART_SR) & UART_SR_TXEMPTY)); // Wait for the character to be sent, can implement ring buffer to remove the wait
+	return 0;
 }
 
-//denne tester alt vi ville oppnå på øving 1
-void uart_tester(void) {
-	//tester om vi klarer å sende + receive
-	//uart_transmit(uart_receiver()+1);
-	//denne linker printf til UART
-	//printf("\nhello!\n");
+void UART_Handler(void)
+{
+	uint32_t status = UART->UART_SR;
+	
+	//Reset UART at overflow error and frame error
+	if(status & (UART_SR_OVRE | UART_SR_FRAME | UART_SR_PARE))
+	{
+		UART->UART_CR = UART_CR_RXEN | UART_CR_TXEN | UART_CR_RSTSTA;
+	}
+	
+	//Check if message is ready to be received
+	if(status & UART_SR_RXRDY)
+	{
+		//Check if receive ring buffer is full and 
+		if((rx_buffer.tail + 1) % UART_RINGBUFFER_SIZE == rx_buffer.head)
+		{
+			printf("ERR: UART RX buffer is full\n\r");
+			rx_buffer.data[rx_buffer.tail] = UART->UART_RHR; //Throw away message
+			return;
+		}
+		rx_buffer.data[rx_buffer.tail] = UART->UART_RHR;
+		rx_buffer.tail = (rx_buffer.tail + 1) % UART_RINGBUFFER_SIZE;
+		
+	}
+	
 	
 }

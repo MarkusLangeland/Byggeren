@@ -1,15 +1,12 @@
 #pragma once
 
 #include "can_controller.h"
-#include "mcp2515.h"
 #include <stdio.h>
-#include <avr/io.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-#define F_OSC 16000000
+#define F_OSC 42000000
 #define TQ 8 //Set a time quanta
-
 
 
 enum can_configs {
@@ -29,6 +26,5 @@ enum BAUD_RATE {
 	CAN_BAUD_500000 = 500000
 };
 
-void can_config_setup(void); 
-	
+
 

@@ -1,85 +1,35 @@
-#include <avr/io.h>
-#include <util/delay.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include "uart.h"
-#include "xmem.h"
-#include "sram.h"
-#include "adc.h"
+#include "sam.h"
 #include "stdint.h"
-#include "joystickAndSlider.h"
-#include "oled.h"
-#include "font.h"
-#include "SPI_COM_Driver.h"
-#include "mcp2515.h"
-#include "can_controller.h"
-#include "menu.h"
+#include "printf-stdarg.h"
 #include "can_config.h"
 
-#define IO_OUTPUT 1
-#define BAUD 9600
-#define UBRR 4915200UL / 16 / BAUD - 1 
+#define LED1 PIO_PA19
+#define LED2 PIO_PA20
+
+void led(){
+	PIOA->PIO_PER |= (LED1 | LED2); 
+	PIOA->PIO_OER |= (LED1 | LED2); 
+	PIOA->PIO_SODR |= (LED1 | LED2);
+}
 
 int main(void)
 {
-	uart_init(UBRR);
-	xmem_init(); 
-	oled_init(); 
-	printf("\n\r");
-	can_init();
+    /* Initialize the SAM system */
 	
-	
-	volatile uint8_t* node2 = (uint8_t*)0x13ff;
-	
-	
-	while(true){
-		_delay_ms(3000);
-		userInput input = getUserInput(node2);	
-		message_type msg = {111, 8, {input.JoyX, 0, 0, 0, input.JoyY}};
-		can_send(&msg);	
-	}
-	 	
-	//menu_init();
-	//testing loopback mode
-// 	message_type message = {
-// 		1365,
-// 		8,
-// 		{'a','b','n','m','k','s','g','f'}
-// 	};
-// 	
-// 		while(true){
-// 			
-// 		
-// 	/*	can_send(&message);*/
-// 		
-// 		message_type messageRecieved;	
-// 		// 		while(!can_has_message()) {
-// 		// 		}
-// 		
-// 				_delay_ms(100);
-// 				
-// 				can_recieve(&messageRecieved);
-// 				printf("Received with ID %u of size %u: \n\r", messageRecieved.ID, messageRecieved.length);
-// 				for (uint8_t i = 0; i < messageRecieved.length; i++) {
-// 					printf("%c, ", messageRecieved.data[i]);
-// 				}
-// 				printf("\n\r");
-// 				
-// 		}
-		
-		while(true){
-			 
-		}
-}
+	configure_uart();
+    
+	SystemInit();
+	led();
 
-void printUART(uint8_t address) { 
-
-	uint8_t value = mcp2515_read(address);
+	uint32_t can_br = 0;
+	can_br |= (ps2 - 1) | ((ps1-1) << 4) | ((proqSeg - 1) << 8) | ((brp_node2 - 1) << 16);
+	can_init_def_tx_rx_mb(can_br);
 	
-	// Print the value in binary representation
-	for (int i = 7; i >= 0; i--) {
-		printf("%u", (value >> i) & 1);
-	}
-
-	printf("\n\r");  // Move to the next line after printing the binary value
+	CAN_MESSAGE test;
+	
+    /* Replace with your application code */
+    while (1) 
+    {
+		can_receive(&test, 2);
+    }
 }
