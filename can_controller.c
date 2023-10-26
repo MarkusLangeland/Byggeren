@@ -4,20 +4,32 @@
 #include <util/delay.h>
 
 
-void can_config_setup() {
-	uint8_t bit_time = 	sync + proqSeg + ps1 + ps2;
-	//uint16_t BRP = 
-}
+// void can_config_setup() {
+// 	uint8_t bit_time = 	sync + proqSeg + ps1 + ps2;
+// 	//uint16_t BRP = 
+// }
 
 
-void can_init(uint8_t mode){
+void can_init(){
 	//checks if we initialize
 	while (mcp2515_init()){
 	}
 	printf("[mcp2515] initialized\n\r");
 	
+	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, configMode<<5);
+	
+	//Config all the CNFx registers for the MCP2515
+	uint8_t BRP = 4;
+		
+	mcp2515_write(MCP_CNF1, (BRP-1));
+	mcp2515_write(MCP_CNF2, ((1 << 7) | ((ps1-1) << 3) | (proqSeg-1) ));
+	//mcp2515_write(MCP_CNF3, (ps2-1));
+	//mcp2515_write(MCP_CNF1, 3);
+	//mcp2515_write(MCP_CNF2, (1 << 7) | (6 << 3));
+	mcp2515_write(MCP_CNF3, 5);
+	
 	//set to mode
-	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, mode<<5); 
+	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, normalMode<<5); 
 	//printf("CAN control register: %u\n", mcp2515_read(MCP_CANCTRL));
 }
 

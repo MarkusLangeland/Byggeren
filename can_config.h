@@ -1,26 +1,34 @@
-/*
- * IncFile2.h
- *
- * Created: 19.10.2023 16:26:04
- *  Author: karitro
- */ 
+#pragma once
+
+#include "can_controller.h"
+#include "mcp2515.h"
+#include <stdio.h>
+#include <avr/io.h>
+#include <stdbool.h>
+#include <stdint.h>
+
+#define F_OSC 16000000
+#define TQ 8 //Set a time quanta
 
 
-#ifndef INCFILE2_H_
-#define INCFILE2_H_
-
-#define F_OCS 16 000 000
-#define BAUD_RATE 125 000
 
 enum can_configs {
 	sync = 1,
-	proqSeg = 2,
-	ps1 = 2,
-	ps2 = 3
-	};
+	proqSeg = 1,
+	ps1 = 8,
+	ps2 = 6,
+	sjw = 1,
+	brp_node1 = 8,
+	brp_node2 = 42
+};
+
+enum BAUD_RATE {
+	CAN_BAUD_100000 = 100000,
+	CAN_BAUD_125000 = 125000,
+	CAN_BAUD_250000 = 250000,
+	CAN_BAUD_500000 = 500000
+};
+
+void can_config_setup(void); 
 	
 
-
-
-
-#endif /* INCFILE2_H_ */

@@ -22,7 +22,7 @@ typedef struct {
 } message_type;
 
 
-void can_init(uint8_t mode); 
+void can_init(); 
 void can_send(message_type* message); 
 void can_recieve(message_type* message); 
 bool can_has_message();

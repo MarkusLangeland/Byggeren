@@ -14,6 +14,7 @@
 #include "mcp2515.h"
 #include "can_controller.h"
 #include "menu.h"
+#include "can_config.h"
 
 #define IO_OUTPUT 1
 #define BAUD 9600
@@ -24,15 +25,21 @@ int main(void)
 	uart_init(UBRR);
 	xmem_init(); 
 	oled_init(); 
-	
 	printf("\n\r");
-
-	can_init(normalMode);
+	can_init();
 	
 	
+	volatile uint8_t* node2 = (uint8_t*)0x13ff;
 	
 	
-	menu_init();
+	while(true){
+		_delay_ms(3000);
+		userInput input = getUserInput(node2);	
+		message_type msg = {111, 8, {input.JoyX, 0, 0, 0, input.JoyY}};
+		can_send(&msg);	
+	}
+	 	
+	//menu_init();
 	//testing loopback mode
 // 	message_type message = {
 // 		1365,
@@ -65,3 +72,14 @@ int main(void)
 		}
 }
 
+void printUART(uint8_t address) { 
+
+	uint8_t value = mcp2515_read(address);
+	
+	// Print the value in binary representation
+	for (int i = 7; i >= 0; i--) {
+		printf("%u", (value >> i) & 1);
+	}
+
+	printf("\n\r");  // Move to the next line after printing the binary value
+}
