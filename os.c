@@ -1,4 +1,6 @@
 
+//This code was obtained from student assistant Pavel Skipenes's Github repository: https://github.com/pavelskipenes/TTK4155/blob/main/nodes/node_2/src/modules/os.c.
+
 #include "sam.h"
 #include "uart.h"
 #include <sys/stat.h>
