@@ -7,10 +7,10 @@
 #include "sram.h"
 #include "adc.h"
 #include "stdint.h"
-#include "joystickAndSlider.h"
+#include "user_input.h"
 #include "oled.h"
 #include "font.h"
-#include "SPI_COM_Driver.h"
+#include "spi_com_driver.h"
 #include "mcp2515.h"
 #include "can_controller.h"
 #include "menu.h"
@@ -29,15 +29,8 @@ int main(void)
 	can_init();
 	
 	
-	volatile uint8_t* node2 = (uint8_t*)0x13ff;
-	
-	
-	while(true){
-		_delay_ms(3000);
-		userInput input = getUserInput(node2);	
-		message_type msg = {111, 8, {input.JoyX, 0, 0, 0, input.JoyY}};
-		can_send(&msg);	
-	}
+	menu_init();
+
 	 	
 	//menu_init();
 	//testing loopback mode
@@ -83,3 +76,4 @@ void printUART(uint8_t address) {
 
 	printf("\n\r");  // Move to the next line after printing the binary value
 }
+

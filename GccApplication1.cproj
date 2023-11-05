@@ -157,10 +157,10 @@
     <Compile Include="font.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="joystickAndSlider.c">
+    <Compile Include="user_input.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="joystickAndSlider.h">
+    <Compile Include="user_input.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">

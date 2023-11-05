@@ -16,7 +16,7 @@ void can_init(){
 	}
 	printf("[mcp2515] initialized\n\r");
 	
-	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, configMode<<5);
+	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, CONFIG<<5);
 	
 	//Config all the CNFx registers for the MCP2515
 	uint8_t BRP = 4;
@@ -29,7 +29,7 @@ void can_init(){
 	mcp2515_write(MCP_CNF3, 5);
 	
 	//set to mode
-	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, normalMode<<5); 
+	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, NORMAL<<5); 
 	//printf("CAN control register: %u\n", mcp2515_read(MCP_CANCTRL));
 }
 

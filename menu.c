@@ -7,8 +7,9 @@
 
 #include <util/delay.h>
 #include <stdbool.h>
-#include "joystickAndSlider.h"
+#include "user_input.h"
 #include "oled.h"
+#include "can_controller.h"
 
 
 void menu_init() {
@@ -26,18 +27,22 @@ void menu_init() {
 
 int menu_main(uint8_t* oled, int* selected) {
 	while (true) {
-		Direction joyPos = getDirection(oled);
+		Direction joyPos = get_direction(oled);
 		switch (joyPos)
 		{
 			case DOWN:
 			if (*selected < 2) {
 				*selected = *selected + 1;
+			} else {
+				*selected = 0;
 			}
 			_delay_ms(600);
 			break;
 			case UP:
 			if (*selected > 0) {
 				*selected = *selected - 1;
+			} else {
+				*selected = 2;
 			}
 			_delay_ms(600);
 			break;
@@ -85,6 +90,7 @@ void menu_sub(int userInput, uint8_t* oled) {
 		case 0:
 		oled_screen_clear();
 		oled_print_string("Playing game");
+		send_user_input_to_node2();
 		break;
 		case 1:
 		oled_screen_clear();
@@ -98,7 +104,7 @@ void menu_sub(int userInput, uint8_t* oled) {
 		break;
 	}
 	while (true) {
-		Direction joyPos = getDirection(oled);
+		Direction joyPos = get_direction(oled);
 		switch (joyPos)
 		{
 			case LEFT:
@@ -122,5 +128,15 @@ void menu_sub(int userInput, uint8_t* oled) {
 			printf("");
 			break;
 		}
+	}
+}
+
+
+void send_user_input_to_node2() {
+	volatile uint8_t* node2 = (uint8_t*)0x13ff;
+	while(true) {
+		userInput input = get_user_input(node2);
+		message_type msg = {111, 8, {input.JoyX, input.JoyY, input.rightSlider, input.right_button_press}};
+		can_send(&msg);
 	}
 }

@@ -1,5 +1,5 @@
 #include "stdint.h"
-#include "SPI_COM_Driver.h"
+#include "spi_com_driver.h"
 #include <stdio.h>
 #include <avr/io.h>
 #include <stdbool.h>
@@ -19,11 +19,11 @@ void SPI_init(void)
 	//Forcing SS to be low when activated 
 }
 
-void SS_on(void){ //Slave select on
+void cs_on(void){ //Slave select on
 	PORTB &= ~(1 << PB4); 
 }
 
-void SS_off(void){ //Slave select off
+void cs_low(void){ //Slave select off
 	PORTB |= (1 << PB4);
 }
 

@@ -1,18 +1,18 @@
 #pragma once 
 
 #include "stdint.h"
-#include "SPI_COM_Driver.h"
+#include "spi_com_driver.h"
 #include <stdio.h>
 #include <avr/io.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-enum modes {
-	normalMode, 
-	sleepMode,
-	loopBackMode,
-	listenOnlyMode,
-	configMode,
+enum MODES {
+	NORMAL, 
+	SLEEP,
+	LOOPBACK,
+	LISTENONLY,
+	CONFIG,
 };
 
 typedef struct {
