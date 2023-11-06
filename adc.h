@@ -1,5 +1,6 @@
-#pragma once
+#pragma once 
+#include <stdint.h>
+#include "sam.h"
 
-uint8_t adc_read(uint8_t channel);
-void adc_init(void) ;
-//uint8_t adc_read(uint8_t channel);
+void adc_init();
+uint16_t adc_read();

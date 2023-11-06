@@ -2,6 +2,7 @@
 #include "stdint.h"
 #include "can_config.h"
 #include "pwm.h"
+#include "adc.h"
 
 #define LED1 PIO_PA19
 #define LED2 PIO_PA20
@@ -39,22 +40,25 @@ int main(void)
 	
 	pwm_init();
 	int freq = 84000000; 
+	adc_init(); 
     while (true) 
     {
 			
 			//pwm_set_frequency(freq, 5);
 	
-		uint8_t has_message = can_receive(&message, 0);
-		pwm_set_duty_cycle((float)(message.data[0] + 100) / 200);
-
-
-		if (!has_message) {
-			for (int i = 0; i < message.data_length; i++)
-			{
-				printf("%d ", message.data[i]);
-			}
-			printf("\n\r");	
-		}
+		//uint8_t has_message = can_receive(&message, 0);
+		//pwm_set_duty_cycle((float)(message.data[0] + 100) / 200);
+//
+//
+		//if (!has_message) {
+			//for (int i = 0; i < message.data_length; i++)
+			//{
+				//printf("%d ", message.data[i]);
+			//}
+			//printf("\n\r");	
+		//}
+		
+		loose_game(); 
     }
 	
 }
@@ -63,6 +67,13 @@ void count_score() {
 	score++;
 }
 
+void loose_game(){
+	uint16_t value = adc_read(); 
+	
+	if ((value < 1500) && (value != 0)){
+		printf("You lost! \n\r");
+	}
+}
 
 
 typedef struct {
@@ -72,10 +83,8 @@ typedef struct {
 } message_type;
 
 //Funker ikke:
-void send_score_to_node1(int score) {
-	volatile uint8_t* node2 = (uint8_t*)0x13ff;
-	while(true) {
-		message_type msg = {111, 8, {0,0,0,0,0,0}};
-		can_send(&msg);
-	}
-}
+//void send_score_to_node1(int score) {
+	//volatile uint8_t* node2 = (uint8_t*)0x13ff;
+	//message_type msg = {111, 8, {0,0,0,0,0,0}};
+	//can_send(&msg, 1);
+//}
