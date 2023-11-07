@@ -200,6 +200,12 @@
     <Compile Include="dac.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="delaycall.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="delaycall.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Device_Startup\startup_sam3xa.c">
       <SubType>compile</SubType>
     </Compile>
@@ -216,6 +222,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="os.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="pid.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="pid.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="printf-stdarg.c">
