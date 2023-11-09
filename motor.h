@@ -2,6 +2,7 @@
 #include "sam.h"
 #include "dac.h"
 #include <stdbool.h>
+#include "sleep.h"
 
 typedef enum {
 	RIGHT,
@@ -16,4 +17,4 @@ void motor_direction(direction data);
 void motor_speed(uint16_t value);
 void motor_enable(int state);
 void testcase(direction dir);
-uint16_t motor_encoder(); 
+int16_t motor_encoder(); 

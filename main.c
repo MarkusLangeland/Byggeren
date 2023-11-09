@@ -7,7 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "delaycall.h"
+#include "sleep.h"
+#include "pid.h"
+#include "solenoid.h"
 
 #define LED1 PIO_PA19
 #define LED2 PIO_PA20
@@ -57,31 +59,52 @@ int main(void)
 	dac_init();
 	//dac_write(1500);
 	
+	solenoid_init();
+	//testSolenoid();
+
+	//solenoid_button();
+	//solenoid_button(); 
+	//testSolenoid();
 	int i = 0; 
+	//solenoid_button();
+	
+	pid_values PID; 
+	pid_init(&PID); 	
+	
     while (true) 
     {
+		run(&message);
+		//uint8_t msg = can_receive(&message, 0);
+		//uint8_t yref = msg->data[0];
+		//printf("%d\n\r", message.data[0]); 
+		
+		pid_controller(&PID, &message);
+		
+		//delay_us(3000000);
+		//solenoid_button();
+		//solenoid_button();
+		//int16_t data = motor_encoder(); 
 		//run(&message);
 		//pwm_set_frequency(freq, 5);
-		
+		//print_int16(data);
 		//loose_game(); 
+		
+			
+		
 		//testcase(RIGHT);
 		//motor_enable(0);
 		//motor_direction(LEFT);
-		
-		i = i+1; 
-		printf("hello %d", i);
-		printf("\n\r");
-		delay_sec(1);
+		//delay_sec(1);
+		//testSolenoid();
     }
 	
 }
 
-void delay_sec(int sec) {
-	for(int i = 0; i < 1000*sec; i++) {
-		printf(i);
-	}
-}
 
+void print_int16(int16_t data){
+	printf("%d", data);
+	printf("\n\r");
+} 
 
 void count_score() {
 	score++;
@@ -116,9 +139,9 @@ void run(CAN_MESSAGE * message) {
 	if (!has_message) {
 		for (int i = 0; i < message->data_length; i++)
 		{
-			printf("%d ", message->data[i]);
+			//printf("%d ", message->data[i]);
 		}
-		printf("\n\r");
+		//printf("\n\r");
 		
 		float test = (float)((message->data[2]) / 10000.0);
 		test = roundf(test*400)/40;
@@ -127,12 +150,13 @@ void run(CAN_MESSAGE * message) {
 		
 		
 		int TRESHOLD_HORISONTAL = 15;
+		int TRESHOLD_VERTICAL = 50;
 		int horisontal = message->data[0];
-		//int vertical = can_msg->data[4];
+		int vertical = message->data[1];
 		
 		if (horisontal < -TRESHOLD_HORISONTAL) {
 			
-			printf("LEFT!");
+			//printf("LEFT!");
 			dac_write(1700);
 			if (horisontal < -95) {
 				dac_write(2500);
@@ -140,13 +164,16 @@ void run(CAN_MESSAGE * message) {
 			motor_direction(LEFT);
 			} else if(horisontal > TRESHOLD_HORISONTAL) {
 			
-			printf("RIGHT");
+			//printf("RIGHT");
 			dac_write(1700);
 			if (horisontal > 95) {
 				dac_write(2500);
 			}
 			motor_direction(RIGHT);
-			} else{
+			} else if(vertical > TRESHOLD_VERTICAL) {
+				dac_write(0);
+				solenoid_button();
+			} else {
 			dac_write(0);
 		}
 		

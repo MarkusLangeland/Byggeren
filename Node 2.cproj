@@ -56,14 +56,13 @@
       <ToolName>Atmel-ICE</ToolName>
     </com_atmel_avrdbg_tool_atmelice>
     <avrtoolinterface>SWD</avrtoolinterface>
-    <avrtoolinterfaceclock>7500000</avrtoolinterfaceclock>
+    <avrtoolinterfaceclock>2000000</avrtoolinterfaceclock>
     <custom>
       <ToolOptions>
         <InterfaceProperties>
           <JtagDbgClock>7500000</JtagDbgClock>
         </InterfaceProperties>
-        <InterfaceName>
-        </InterfaceName>
+        <InterfaceName>SWD</InterfaceName>
       </ToolOptions>
       <ToolType>custom</ToolType>
       <ToolNumber>
@@ -200,10 +199,10 @@
     <Compile Include="dac.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="delaycall.c">
+    <Compile Include="sleep.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="delaycall.h">
+    <Compile Include="sleep.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Device_Startup\startup_sam3xa.c">
@@ -240,6 +239,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="pwm.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="solenoid.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="solenoid.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="uart.c">
